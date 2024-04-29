@@ -1,0 +1,122 @@
+mysql -u root -p
+use household_service_database;
+
+
+CREATE TABLE User (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    Email_Phone VARCHAR(255) UNIQUE,
+    Password VARCHAR(255),
+    Type VARCHAR(255)
+);
+
+CREATE TABLE Client (
+    Client_ID INT PRIMARY KEY,
+    Name VARCHAR(255),
+    Total_due FLOAT,
+    FOREIGN KEY (Client_ID) REFERENCES User(id)
+);
+
+CREATE TABLE Worker (
+    Worker_ID INT PRIMARY KEY,
+    Name VARCHAR(255),
+    Age INT,
+    Gender VARCHAR(255),
+    Type VARCHAR(255),
+    Status ENUM('Inactive', 'Active') DEFAULT 'Active',
+    Rating FLOAT,
+    Experience_year INT,
+    Duration INT,
+    Type_Updated BOOLEAN,
+    FOREIGN KEY (Worker_ID) REFERENCES User(id)
+);
+
+CREATE TABLE Admin (
+    Admin_ID INT PRIMARY KEY,
+    Name VARCHAR(255),
+    FOREIGN KEY (Admin_ID) REFERENCES User(id)
+);
+
+CREATE TABLE Nanny (
+    Nanny_ID INT PRIMARY KEY,
+    Skill1 VARCHAR(255),
+    Skill2 VARCHAR(255),
+    Skill3 VARCHAR(255),
+    FOREIGN KEY (Nanny_ID) REFERENCES Worker(Worker_ID)
+);
+
+CREATE TABLE Driver (
+    Driver_ID INT PRIMARY KEY,
+    Licence VARCHAR(255),
+    Vehicle VARCHAR(255),
+    FOREIGN KEY (Driver_ID) REFERENCES Worker(Worker_ID)
+);
+
+CREATE TABLE Cook (
+    Cook_ID INT PRIMARY KEY,
+    Food_type1 VARCHAR(255),
+    Food_type2 VARCHAR(255),
+    Food_type3 VARCHAR(255),
+    FOREIGN KEY (Cook_ID) REFERENCES Worker(Worker_ID)
+);
+
+CREATE TABLE Security_guard (
+    Security_guard_ID INT PRIMARY KEY,
+    Shift ENUM('Night', 'Day', 'Both') DEFAULT 'Day',
+    Location VARCHAR(255),
+    FOREIGN KEY (Security_guard_ID) REFERENCES Worker(Worker_ID)
+);
+
+
+CREATE TABLE Rating (
+    Clientid INT,
+    Workerid INT,
+    Rating FLOAT,
+    FOREIGN KEY (Clientid) REFERENCES Client(Client_ID),
+    FOREIGN KEY (Workerid) REFERENCES Worker(Worker_ID)
+);
+
+CREATE TABLE Review (
+    Clientid INT,
+    Workerid INT,
+    Comment VARCHAR(2000),
+    FOREIGN KEY (Clientid) REFERENCES Client(Client_ID),
+    FOREIGN KEY (Workerid) REFERENCES Worker(Worker_ID)
+);
+
+CREATE TABLE Complain (
+    Clientid INT,
+    Adminid INT,
+    Complain VARCHAR(2000),
+    FOREIGN KEY (Clientid) REFERENCES Client(Client_ID),
+    FOREIGN KEY (Adminid) REFERENCES Admin(Admin_ID)
+);
+
+CREATE TABLE Cancel_request (
+    Clientid INT,
+    Adminid INT,
+    Requestid INT,
+    FOREIGN KEY (Clientid) REFERENCES Client(Client_ID),
+    FOREIGN KEY (Adminid) REFERENCES Admin(Admin_ID)
+);
+
+
+CREATE TABLE Payment(
+    Payment_Clientid INT,
+    Payment_Workerid INT,
+    Cost FLOAT,
+    Status ENUM('paid', 'unpaid') DEFAULT 'unpaid',
+    Method ENUM('Mobile banking', 'Card', 'Cash') DEFAULT 'Mobile banking',
+    FOREIGN KEY (Payment_Clientid) REFERENCES Client(Client_ID),
+    FOREIGN KEY (Payment_Workerid) REFERENCES Worker(Worker_ID)
+);
+
+
+CREATE TABLE Hire (
+    Clientid INT,
+    Workerid INT,
+    Duration INT,
+    Cost FLOAT,
+    Status ENUM('Accepted', 'Rejected', 'Pending') DEFAULT 'Pending',
+    FOREIGN KEY (Clientid) REFERENCES Client(Client_ID),
+    FOREIGN KEY (Workerid) REFERENCES Worker(Worker_ID)
+);
